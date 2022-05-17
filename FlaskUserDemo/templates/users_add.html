@@ -1,6 +1,6 @@
 {% extends '_layout.html' %}
 
-{% block title %}Sign Up{% endblock %}
+{% block title %} Sign Up {% endblock %}
 
 {% block content %}
 <form method="post" enctype="multipart/form-data">
@@ -12,13 +12,33 @@
     <br>
     <label for="email">Email:</label>
     <input id="email" name="email" type="email">
-    <br>
+    <p id="message"></p>
     <label for="password">Password:</label>
     <input id="password" name="password" type="password">
     <br>
-    <label for="pic">Profile picture:</label>
-    <input id="pic" type="file" name="avatar">
+    <label for="avatar">Profile picture:</label>
+    <input id="avatar" name="avatar" type="file" accept="image/*">
     <br>
     <input type="submit" value="Sign Up">
 </form>
+<script>
+    let emailInput = document.querySelector("#email");
+    let message = document.querySelector("#message");
+
+    emailInput.addEventListener("input", checkUniqueEmail);
+
+    async function checkUniqueEmail() {
+        let response = await fetch("/checkemail?email=" + emailInput.value);
+        let json = await response.json();
+
+        if (json.status == 'OK') {
+            message.style.color = 'green';
+            message.textContent = 'Email is available';
+        } else {
+            message.style.color = 'red';
+            message.textContent = 'Email is taken';
+        }
+    }
+</script>
+<button onclick="history.back()">Go Back</button>
 {% endblock %}

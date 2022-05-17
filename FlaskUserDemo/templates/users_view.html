@@ -1,6 +1,6 @@
 {% extends '_layout.html' %}
 
-{% block title %}View profile{% endblock %}
+{% block title %} View profile {% endblock %}
 
 {% block content %}
 
@@ -8,7 +8,7 @@
 
 <p><a href="mailto:{{ result.email }}">{{ result.email }}</a></p>
 
-<img src="{{ url_for('static', filename='images/' + (result.avatar or 'default.png')) }}" height="200">
+<img src="{{ url_for('static', filename='images/' + (result.avatar or 'default.png')) }}" style=" height:200px;">
 
 <p>
     <a href="/edit?id={{ result.id }}">Edit</a>
