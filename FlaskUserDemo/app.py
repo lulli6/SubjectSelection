@@ -111,12 +111,12 @@ app.register_blueprint(setup)
 # TODO: Add a '/dashboard' (list_users) route that uses SELECT
 @app.route('/dashboard')
 def list_users():
-    if session['role'] != 'admin':
-        return redirect('/')
-        flash("Only admin can access this page.")
+    #if session['role'] != 'admin':
+    #    return redirect('/')
+    #    flash("Only admin can access this page.")
     with create_connection() as connection:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM users")
+            cursor.execute("SELECT * FROM movies")
             result = cursor.fetchall()
     return render_template('users_list.html', result=result)
 
