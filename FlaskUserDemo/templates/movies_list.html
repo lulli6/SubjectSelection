@@ -1,0 +1,22 @@
+{% extends '_layout.html' %}
+
+{% block title %} Movies {% endblock %}
+
+{% block content %}
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Genre</th>
+        <th>Year</th>
+        <th>Summary</th>
+    </tr>
+    {% for row in result %}
+    <tr>
+        <td>{{ row.title }}</td>
+        <td>{{ row.genre }}</td>
+        <td>{{ row.year }}</td>
+        <td>{{ row.summary }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
