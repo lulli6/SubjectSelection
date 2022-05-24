@@ -20,7 +20,7 @@ app.register_blueprint(setup)
 
 @app.route('/')
 def home():
-    return render_template("index.html")
+    return render_template("index.html", isIndex=True)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
