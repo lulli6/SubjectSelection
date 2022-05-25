@@ -31,7 +31,7 @@ def login():
 
         with create_connection() as connection:
             with connection.cursor() as cursor:
-                sql = "SELECT * FROM users WHERE email = %s AND password = %s"
+                sql = """SELECT * FROM users WHERE email = %s AND password = %s"""
                 values = (
                     request.form['email'],
                     encrypted_password
@@ -74,10 +74,9 @@ def add_user():
 
         with create_connection() as connection:
             with connection.cursor() as cursor:
-                sql = """INSERT INTO users
+                sql = """INSERT INTO users 
                     (first_name, last_name, email, password, avatar)
-                    VALUES (%s, %s, %s, %s, %s)
-                """
+                    VALUES (%s, %s, %s, %s, %s)"""
                 values = (
                     request.form['first_name'],
                     request.form['last_name'],
@@ -91,7 +90,7 @@ def add_user():
                 except pymysql.err.IntegrityError:
                     flash('Email has already been taken.')
                     return redirect('/register')
-                sql = "SELECT * FROM users WHERE email = %s AND password = %s"
+                sql = """SELECT * FROM users WHERE email = %s AND password = %s"""
                 values = (
                     request.form['email'],
                     encrypted_password
@@ -119,7 +118,7 @@ def list_movies():
 def view_user():
     with create_connection() as connection:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM users WHERE user_id = %s", request.args['user_id'])
+            cursor.execute("""SELECT * FROM users WHERE user_id = %s""", request.args['user_id'])
             result = cursor.fetchone()
     return render_template('users_view.html', result=result)
 
@@ -135,14 +134,15 @@ def view_user():
 #                values = (request.args['id'])
 #                cursor.execute(sql, values)
 #                connection.commit()
-#    return redirect ('/dashboard')
+#    return redirect('/dashboard')
 
-# TODO: Add an '/edit_user' route that uses UPDATE
 @app.route('/edit', methods=['GET', 'POST'])
 def edit_user():
-    if session['role'] != 'admin' and str(session['user_id']) != request.args['user_id']: 
-        flash("You don't have persmission to edit this user")
-        return redirect('/view?id=' + request.args['user_id'])
+    # Admin are allowed, users with the right id are allowed, everyone else sees 404.
+    if session['role'] != 'admin' and str(session['user_id']) != request.args['id']:
+        flash("You don't have permission to edit this user.")
+        return redirect('/view?user_id=' + request.args['id'])
+
     if request.method == 'POST':
         if request.files['avatar'].filename:
             avatar_image = request.files["avatar"]
@@ -151,58 +151,35 @@ def edit_user():
             avatar_image.save("static/images/" + avatar_filename)
             if request.form['old_avatar'] != 'None':
                 os.remove("static/images/" + request.form['old_avatar'])
-            elif request.form['old_avatar'] != 'None':
-                avatar_filename = request.form['old_avatar']
-            else:
-                avatar_filename = None
+        elif request.form['old_avatar'] != 'None':
+            avatar_filename = request.form['old_avatar']
+        else:
+            avatar_filename = None
 
         with create_connection() as connection:
             with connection.cursor() as cursor:
-                if request.form['password']:
-                    password = request.form['password']
-                    encrypted_password = hashlib.sha256(password.encode()).hexdigest()
-                    sql = """UPDATE users SET
-                    first_name = %s,
-                    last_name = %s,
-                    email = %s,
-                    password = %s,
-                    avatar = %s
-                    WHERE user_id = %s"""
-                    values = (
-                        request.form['first_name'], 
-                        request.form['last_name'], 
-                        request.form['email'],
-                        encrypted_password,
-                        avatar_filename,
-                        request.form['user_id']
-                    )
-
-                else:
-                    sql = """UPDATE users SET
+                sql = """UPDATE users SET
                     first_name = %s,
                     last_name = %s,
                     email = %s,
                     avatar = %s
-                    WHERE user_id = %s"""
-                    values = (
-                        request.form['first_name'], 
-                        request.form['last_name'], 
-                        request.form['email'],
-                        avatar_filename,
-                        request.form['user_id']
-                        )
+                WHERE user_id = %s"""
+                values = (
+                    request.form['first_name'],
+                    request.form['last_name'],
+                    request.form['email'],
+                    avatar_filename,
+                    request.form['user_id']
+                )
                 cursor.execute(sql, values)
                 connection.commit()
-
-        return redirect (url_for('view_user', user_id=session['user_id']))
+        return redirect('/view?user_id=' + request.form['user_id'])
     else:
         with create_connection() as connection:
             with connection.cursor() as cursor:
-                sql = "SELECT * FROM users WHERE user_id = %s"
-                values = (request.args['user_id'])
-                cursor.execute(sql, values)
+                cursor.execute("SELECT * FROM users WHERE user_id = %s", request.args['id'])
                 result = cursor.fetchone()
-        return render_template("users_edit.html", result=result)
+        return render_template('users_edit.html', result=result)
 
 #@app.route('/checkemail')
 #def check_email():
