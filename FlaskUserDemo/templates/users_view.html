@@ -6,7 +6,7 @@
 
 <h1>{{ result.first_name }} {{ result.last_name }}</h1>
 
-<p><a href="mailto:{{ result.email }}">{{ result.email }}</a></p>
+<!--<p><a href="mailto:{{ result.email }}">{{ result.email }}</a></p>-->
 
 <img src="{{ url_for('static', filename='images/' + (result.avatar or 'default.png')) }}" style=" height:200px;">
 
@@ -15,7 +15,6 @@
     <a href="/delete?id={{ result.user_id }}" onclick="return confirm('Are you sure?')">Delete</a>
 </p>
 <p>
-    <a href="{{ url_for('list_movies') }}">Back to movie list</a>
+    <a href="{{ url_for('list_movies') }}">Movie list</a>
 </p>
-
 {% endblock %}
