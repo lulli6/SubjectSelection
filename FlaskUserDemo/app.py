@@ -106,6 +106,21 @@ def add_user():
 
     return render_template('users_add.html')
 
+@app.route('/watched', methods=['GET', 'POST'])
+def watch_movie():
+    if request.method == 'POST':
+        with create_connection() as connection:
+            with connection.cursor() as cursor:
+                sql = """INSERT INTO users_movies SELECT user_id, movie_id FROM users, movies
+                         WHERE users.user_id"""
+                values = (
+                    request.args['user_id'],
+                    request.args['movie_id']
+                )
+                cursor.execute(sql, values)
+                connection.commit()
+        return redirect('movies_list.html')
+
 @app.route('/movies')
 def list_movies():
     with create_connection() as connection:
