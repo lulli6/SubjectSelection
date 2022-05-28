@@ -97,6 +97,7 @@ def add_user():
                 )
                 cursor.execute(sql, values)
                 result = cursor.fetchone()
+
             if result:
                 session['logged_in'] = True
                 session['first_name'] = result['first_name']
@@ -105,21 +106,6 @@ def add_user():
                 return redirect (url_for('view_user', user_id=session['user_id']))
 
     return render_template('users_add.html')
-
-@app.route('/watched', methods=['GET', 'POST'])
-def watch_movie():
-    if request.method == 'POST':
-        with create_connection() as connection:
-            with connection.cursor() as cursor:
-                sql = """INSERT INTO users_movies SELECT user_id, movie_id FROM users, movies
-                         WHERE users.user_id"""
-                values = (
-                    request.args['user_id'],
-                    request.args['movie_id']
-                )
-                cursor.execute(sql, values)
-                connection.commit()
-        return redirect('movies_list.html')
 
 @app.route('/movies')
 def list_movies():
@@ -137,26 +123,89 @@ def view_user():
             result = cursor.fetchone()
     return render_template('users_view.html', result=result)
 
-## TODO: Add a '/delete_user' route that uses DELETE
-#@app.route('/delete')
-#def delete_user():
-#    if session['role'] != 'admin' and str(session['id']) != request.args['id']: 
-#        flash("You don't have persmission to delete this user")
-#        return redirect('/view?id=' + request.args['id'])
-#    with create_connection() as connection:
+@app.route('/watched')
+def watched_movies():
+    with create_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("""SELECT * FROM users
+                              JOIN users_movies ON users_movies.user_id = users.user_id
+                              JOIN movies ON movies.movie_id = users_movies.movie_id
+                           """)
+            result = cursor.fetchall()
+    return render_template('watched_list.html', result=result)
+
+@app.route('/add', methods=['POST', 'GET'])
+def add_movie():
+    if request.method=="POST":
+        with create_connection() as connection:
+            with connection.cursor() as cursor:
+                    sql = """INSERT INTO users_movies (user_id, movie_id) 
+                             SELECT user_id, movie_id FROM users, movies
+                             WHERE users.user_id = %s and movies.movie_id = %s"""
+                    values = (
+                        request.form['user_id'],
+                        request.form['movie_id']
+                        )
+                    cursor.execute(sql, values)
+                    connection.commit()
+        return redirect('/watched')
+
+#@app.route('/watched', methods=['POST', 'GET'])
+#def watched():
+#    #if request.method=="GET":
+#    #    with create_connection() as connection:
+#    #        with connection.cursor() as cursor:
+#    #            results = session.get("watched")
+#    #            print(results)
+
+#    if request.method=="POST":
+#        with create_connection() as connection:
 #            with connection.cursor() as cursor:
-#                sql = """DELETE FROM users WHERE id = %s"""
-#                values = (request.args['id'])
-#                cursor.execute(sql, values)
-#                connection.commit()
-#    return redirect('/dashboard')
+#                sql = """INSERT INTO users_movies (user_id, movie_id) 
+#                         SELECT user_id, movie_id FROM users, movies
+#                         WHERE users.user_id = %s and movies.movie_id = %s"""
+#                values = (
+#                    request.form['user_id'],
+#                    request.form['movie_id'],
+#                    )
+#            cursor.execute(sql, values)
+#            connection.commit()
+#    return render_template ("watched_movies.html")
+
+#@app.route('/watched')
+#def watch_movie():
+#    with create_connection() as connection:
+#        with connection.cursor() as cursor:
+#            sql = """INSERT INTO users_movies (user_id, movie_id) 
+#                        SELECT user_id, movie_id FROM users, movies
+#                        WHERE users.user_id = %s and movies.movie_id = %s"""
+#            values = (
+#                request.form['user_id'],
+#                request.form['movie_id']
+#            )
+#            cursor.execute(sql, values)
+#            connection.commit()
+#    return redirect('movies_list.html')
+
+# TODO: Add a '/delete_user' route that uses DELETE
+@app.route('/delete')
+def delete_user():
+    #if session['role'] != 'admin' and str(session['id']) != request.args['id']: 
+    #    flash("You don't have persmission to delete this user")
+    #    return redirect('/view?id=' + request.args['id'])
+    with create_connection() as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("DELETE FROM users WHERE user_id=%s", request.args['id'])
+                connection.commit()
+                session.clear()
+    return redirect ('/')
 
 @app.route('/edit', methods=['GET', 'POST'])
 def edit_user():
-    # Admin are allowed, users with the right id are allowed, everyone else sees 404.
-    if session['role'] != 'admin' and str(session['user_id']) != request.args['id']:
-        flash("You don't have permission to edit this user.")
-        return redirect('/view?user_id=' + request.args['id'])
+    ## Admin are allowed, users with the right id are allowed, everyone else sees 404.
+    #if session['role'] != 'admin' and str(session['user_id']) != request.args['id']:
+    #    flash("You don't have permission to edit this user.")
+    #    return redirect('/view?user_id=' + request.args['id'])
 
     if request.method == 'POST':
         if request.files['avatar'].filename:
