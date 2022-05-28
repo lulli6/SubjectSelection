@@ -4,13 +4,14 @@
 
 {% block content %}
 
-<h1>Watched Movies</h1>
+<h1>{{result.first_name}}'s Watched Movies</h1>
 <table>
     <tr>
         <th>Title</th>
         <th>Genre</th>
         <th>Year</th>
         <th>Summary</th>
+        <th>Actions</th>
     </tr>
     {% for row in result %}
     <tr>
@@ -18,6 +19,9 @@
         <td>{{ row.genre }}</td>
         <td>{{ row.year }}</td>
         <td>{{ row.summary }}</td>
+        <td>
+            <a href="/deletemov?user_id={{result.movie_id}}" onclick="return confirm('Are you sure?')">Delete</a>
+        </td>
     </tr>
     {% endfor %}
 </table>
