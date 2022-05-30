@@ -17,6 +17,6 @@
 <p>
     <a href="{{ url_for('list_movies') }}">Movie list</a>
     <br>
-    <a href="{{ url_for('watched_movies') }}">Watched list</a>
+    <a href="{{ url_for('watched_movies', user_id=session['user_id']) }}">Watched list</a>
 </p>
 {% endblock %}

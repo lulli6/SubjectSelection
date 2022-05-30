@@ -127,10 +127,14 @@ def view_user():
 def watched_movies():
     with create_connection() as connection:
         with connection.cursor() as cursor:
-            cursor.execute("""SELECT * FROM users
+            sql = """SELECT * FROM users
                      JOIN users_movies ON users_movies.user_id = users.user_id
-                     JOIN movies ON movies.movie_id = users_movies.movie_id """, request.args['user_id'])
-            result = cursor.fetchall()
+                     JOIN movies ON movies.movie_id = users_movies.movie_id WHERE users.user_id = %s"""
+            values = (
+                request.args['user_id']
+                )
+            cursor.execute(sql, values)
+            result = cursor.fetchone()
     return render_template('watched_list.html', result=result)
 
 #@app.route('/watched')
