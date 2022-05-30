@@ -91,6 +91,7 @@ def add_user():
                     flash('Email has already been taken.')
                     return redirect('/register')
 
+# Login in the user after they sign up and take them to their profile page
                 sql = """SELECT * FROM users WHERE email = %s AND password = %s"""
                 values = (
                     request.form['email'],
@@ -150,10 +151,45 @@ def add_movie():
                 values = (
                     request.form['user_id'],
                     request.form['movie_id']
-                    )
+                )
                 cursor.execute(sql, values)
-                result = cursor.fetchone()
-    return redirect(url_for('watched_movies'))
+                connection.commit()
+    return redirect ('/watched?user_id=' + request.args['user_id'])    
+
+#@app.route('/addmov', methods=['POST', 'GET'])
+#def add_movie():
+#    if request.method == 'POST':
+#        with create_connection() as connection:
+#            with connection.cursor() as cursor:
+#                sql = """INSERT INTO users_movies (user_id, movie_id) 
+#                         SELECT user_id, movie_id FROM users, movies 
+#                         WHERE users.user_id = %s and movies.movie_id = %s"""
+#                values = (
+#                    request.args['user_id'],
+#                    request.args['movie_id']
+#                    )
+#                cursor.execute(sql, values)
+#                connection.commit()
+#                result = cursor.fetchone()
+#                return redirect ('/watched?user_id=' + request.args['user_id'])
+#    else:
+#        return  render_template('movies_list.html', result=result)
+
+
+#@app.route('/addmov')
+#def add_movie():
+#    with create_connection() as connection:
+#        with connection.cursor() as cursor:
+#            sql = """INSERT INTO users_movies (user_id, movie_id) 
+#                        SELECT user_id, movie_id FROM users, movies 
+#                        WHERE users.user_id = %s and movies.movie_id = %s"""
+#            values = (
+#                request.args['user_id'],
+#                request.args['movie_id']
+#                )
+#            cursor.execute(sql, values)
+#            connection.commit()
+#    return redirect ('/watched?user_id=' + request.args['user_id'])
 
 #@app.route('/watched')
 #def watched_movies():
