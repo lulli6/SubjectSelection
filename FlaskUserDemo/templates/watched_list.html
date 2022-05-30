@@ -15,12 +15,12 @@
     </tr>
     {% for row in result %}
     <tr>
-        <td>{{ row.title }}</td>
-        <td>{{ row.genre }}</td>
-        <td>{{ row.year }}</td>
-        <td>{{ row.summary }}</td>
+        <td>{{ result.title }}</td>
+        <td>{{ result.genre }}</td>
+        <td>{{ result.year }}</td>
+        <td>{{ result.summary }}</td>
         <td>
-            <a href="/deletemov?user_id={{result.movie_id}}" onclick="return confirm('Are you sure?')">Delete</a>
+            <a href="/deletemov?movie_id={{row.movie_id}}" onclick="return confirm('Are you sure?')">Delete</a>
         </td>
     </tr>
     {% endfor %}

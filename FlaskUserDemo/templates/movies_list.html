@@ -5,7 +5,6 @@
 {% block content %}
 <table>
     <tr>
-        <th></th>
         <th>Title</th>
         <th>Genre</th>
         <th>Year</th>
@@ -17,7 +16,7 @@
         <td>{{ row.genre }}</td>
         <td>{{ row.year }}</td>
         <td>{{ row.summary }}</td>
-        <td><a href="/add?id=" onclick="return confirm('Add to watch list?')">Watched</a></td>
+        <td><a href="/addmov?user_id="{{row.movie_id}}onclick="return confirm('Add to watch list?')">Watched</a></td>
     </tr>
     {% endfor %}
 </table>

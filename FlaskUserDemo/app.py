@@ -90,6 +90,7 @@ def add_user():
                 except pymysql.err.IntegrityError:
                     flash('Email has already been taken.')
                     return redirect('/register')
+
                 sql = """SELECT * FROM users WHERE email = %s AND password = %s"""
                 values = (
                     request.form['email'],
@@ -129,13 +130,30 @@ def watched_movies():
         with connection.cursor() as cursor:
             sql = """SELECT * FROM users
                      JOIN users_movies ON users_movies.user_id = users.user_id
-                     JOIN movies ON movies.movie_id = users_movies.movie_id WHERE users.user_id = %s"""
+                     JOIN movies ON movies.movie_id = users_movies.movie_id 
+                     WHERE users.user_id = %s"""
             values = (
                 request.args['user_id']
                 )
             cursor.execute(sql, values)
             result = cursor.fetchone()
     return render_template('watched_list.html', result=result)
+
+@app.route('/addmov', methods=['POST', 'GET'])
+def add_movie():
+    if request.method == 'POST':
+        with create_connection() as connection:
+            with connection.cursor() as cursor:
+                sql = """INSERT INTO users_movies (user_id, movie_id) 
+                         SELECT user_id, movie_id FROM users, movies 
+                         WHERE users.user_id = %s and movies.movie_id = %s"""
+                values = (
+                    request.form['user_id'],
+                    request.form['movie_id']
+                    )
+                cursor.execute(sql, values)
+                result = cursor.fetchone()
+    return redirect(url_for('watched_movies'))
 
 #@app.route('/watched')
 #def watched_movies():
@@ -163,17 +181,6 @@ def watched_movies():
 #            result = cursor.fetchone()
 #    return render_template('watched_list.html', result=result)
 
-@app.route('/add')
-def add_movie():
-    with create_connection() as connection:
-        with connection.cursor() as cursor:
-                cursor.execute("""INSERT INTO users_movies (user_id, movie_id) 
-                            SELECT user_id, movie_id FROM users, movies
-                            WHERE users.user_id = %s and movies.movie_id = %s""", 
-                            request.form['user_id'],
-                            request.form['movie_id'])
-                connection.commit()
-    return redirect('/watched')
 
 #@app.route('/watched', methods=['POST', 'GET'])
 #def watched():
@@ -230,7 +237,7 @@ def delete_user():
 def delete_movie():
     with create_connection() as connection:
             with connection.cursor() as cursor:
-                cursor.execute("DELETE FROM users_movies WHERE user_id=%s", request.args['user_id'])
+                cursor.execute("DELETE FROM users_movies WHERE user_id=%s", request.args['movie_id'])
                 connection.commit()
     return redirect ('/watched')
 
