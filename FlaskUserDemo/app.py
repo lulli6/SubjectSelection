@@ -137,25 +137,21 @@ def watched_movies():
                 request.args['user_id']
                 )
             cursor.execute(sql, values)
-            result = cursor.fetchone()
+            result = cursor.fetchall()
     return render_template('watched_list.html', result=result)
 
-@app.route('/addmov', methods=['POST', 'GET'])
+@app.route('/addmov')
 def add_movie():
-    if request.method == 'POST':
-        with create_connection() as connection:
-            with connection.cursor() as cursor:
-                sql = """INSERT INTO users_movies (user_id, movie_id) 
-                         SELECT user_id, movie_id FROM users, movies 
-                         WHERE users.user_id = %s and movies.movie_id = %s"""
-                values = (
-                    request.form['user_id'],
-                    request.form['movie_id']
-                )
-                cursor.execute(sql, values)
-                connection.commit()
-    return redirect (url_for('view_user', user_id=session['user_id']))
-    #return redirect ('/watched?user_id=' + request.args['user_id'])    
+    with create_connection() as connection:
+        with connection.cursor() as cursor:
+            sql = """INSERT INTO users_movies (user_id, movie_id) VALUES (%s, %s) """
+            values = (
+                session['user_id'],
+                request.args['movie_id']
+            )
+            cursor.execute(sql, values)
+            connection.commit()
+    return redirect ('/watched?user_id=' + str(session['user_id']))    
 
 #@app.route('/addmov', methods=['POST', 'GET'])
 #def add_movie():
@@ -269,14 +265,14 @@ def delete_user():
                 session.clear()
     return redirect ('/')
 
-# TODO: Add a '/delete_user' route that uses DELETE
-@app.route('/deletemov')
-def delete_movie():
-    with create_connection() as connection:
-            with connection.cursor() as cursor:
-                cursor.execute("DELETE FROM users_movies WHERE user_id=%s", request.args['movie_id'])
-                connection.commit()
-    return redirect ('/watched')
+## TODO: Add a '/delete_user' route that uses DELETE
+#@app.route('/deletemov')
+#def delete_movie():
+#    with create_connection() as connection:
+#            with connection.cursor() as cursor:
+#                cursor.execute("DELETE FROM users_movies WHERE movie_id=%s", request.args['movie_id'])
+#                connection.commit()
+#    return redirect ('/watched?user_id=' + str(session['user_id']))
 
 @app.route('/edit', methods=['GET', 'POST'])
 def edit_user():
