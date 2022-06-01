@@ -154,7 +154,8 @@ def add_movie():
                 )
                 cursor.execute(sql, values)
                 connection.commit()
-    return redirect ('/watched?user_id=' + request.args['user_id'])    
+    return redirect (url_for('view_user', user_id=session['user_id']))
+    #return redirect ('/watched?user_id=' + request.args['user_id'])    
 
 #@app.route('/addmov', methods=['POST', 'GET'])
 #def add_movie():
