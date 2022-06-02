@@ -16,9 +16,11 @@
         <td>{{ row.genre }}</td>
         <td>{{ row.year }}</td>
         <td>{{ row.summary }}</td>
-        <td><a href="/addmov?movie_id={{row.movie_id}}"onclick="return confirm('Add to watch list?')">Watched</a></td>
+        <td><a href="/addmov?movie_id={{row.movie_id}}" onclick="return confirm('Add to watch list?')">Watched</a></td>
     </tr>
     {% endfor %}
 </table>
 <a href="{{ url_for('view_user', user_id=session['user_id']) }}">View your account</a>
+<br>
+<a href="{{ url_for('watched_movies', user_id=session['user_id']) }}">Watched list</a>
 {% endblock %}
