@@ -6,10 +6,4 @@
 <a href="{{ url_for('login') }}">Login</a>
 <br>
 <a href="{{ url_for('add_user') }}">Sign Up</a>
-<!--<br>
-{% if session['role'] == 'admin' %}
-<a href="{{ url_for('list_movies') }}">View All Movies</a>
-{% elif 'logged_in' in session %}
-<a href="{{ url_for('view_user', user_id=session['user_id']) }}">View your account</a>
-{% endif %}-->
 {% endblock %}

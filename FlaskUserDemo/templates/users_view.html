@@ -5,6 +5,7 @@
 {% block content %}
 
 <h1>{{ result.first_name }} {{ result.last_name }}</h1>
+<h3>{{result.role}}</h3>
 
 <!--<p><a href="mailto:{{ result.email }}">{{ result.email }}</a></p>-->
 
@@ -19,4 +20,7 @@
     <br>
     <a href="{{ url_for('watched_movies', user_id=session['user_id']) }}">Watched List</a>
 </p>
+{% if session['role'] == 'admin' %}
+<a href="{{ url_for('list_users') }}">View all users</a>
+{% endif %}
 {% endblock %}

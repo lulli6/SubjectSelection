@@ -109,6 +109,14 @@ def add_user():
 
     return render_template('users_add.html')
 
+@app.route('/dashboard')
+def list_users():
+    with create_connection() as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM users")
+            result = cursor.fetchall()
+    return render_template('users_list.html', result=result)
+
 @app.route('/movies')
 def list_movies():
     with create_connection() as connection:
