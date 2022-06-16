@@ -62,8 +62,10 @@ img {
 }
 
 * {
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Kaushan Script', cursive;
+    font-size: 80px;
 }
+
 
 button {
     border: none;

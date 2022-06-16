@@ -16,9 +16,9 @@
     <a href="/delete?id={{ result.user_id }}" onclick="return confirm('Are you sure?')">Delete</a>
 </p>
 <p>
-    <a href="{{ url_for('list_movies') }}">Movie list</a>
+    <a href="{{ url_for('list_subject') }}">Subject list</a>
     <br>
-    <a href="{{ url_for('watched_movies', user_id=session['user_id']) }}">Watched List</a>
+    <a href="{{ url_for('chosen_subject', user_id=session['user_id']) }}">My subjects</a>
 </p>
 {% if session['role'] == 'admin' %}
 <a href="{{ url_for('list_users') }}">View all users</a>

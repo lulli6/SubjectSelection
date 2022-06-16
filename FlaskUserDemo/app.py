@@ -12,7 +12,8 @@ app.register_blueprint(setup)
 #        'list_users',
 #        'view_user',
 #        'edit_user',
-#        'delete_user'
+#        'delete_user',
+#        'add_subject'
 #        ]
 #    if 'logged_in' not in session and request.endpoint in restricted_pages:
 #        flash("You are not logged in.")
@@ -117,13 +118,13 @@ def list_users():
             result = cursor.fetchall()
     return render_template('users_list.html', result=result)
 
-@app.route('/movies')
-def list_movies():
+@app.route('/subject')
+def list_subject():
     with create_connection() as connection:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM movies")
+            cursor.execute("SELECT * FROM subject")
             result = cursor.fetchall()
-    return render_template('movies_list.html', result=result)
+    return render_template('subject_list.html', result=result)
 
 @app.route('/view')
 def view_user():
@@ -134,12 +135,12 @@ def view_user():
     return render_template('users_view.html', result=result)
 
 @app.route('/watched')
-def watched_movies():
+def choosen_subject():
     with create_connection() as connection:
         with connection.cursor() as cursor:
             sql = """SELECT * FROM users
-                     JOIN users_movies ON users_movies.user_id = users.user_id
-                     JOIN movies ON movies.movie_id = users_movies.movie_id 
+                     JOIN users_subject ON users_subject.user_id = users.user_id
+                     JOIN subject ON subject.subject_id = users_subject.subject_id 
                      WHERE users.user_id = %s"""
             values = (
                 request.args['user_id']
@@ -148,14 +149,14 @@ def watched_movies():
             result = cursor.fetchall()
     return render_template('watched_list.html', result=result)
 
-@app.route('/addmov')
-def add_movie():
+@app.route('/addsub')
+def add_subject():
     with create_connection() as connection:
         with connection.cursor() as cursor:
-            sql = """INSERT INTO users_movies (user_id, movie_id) VALUES (%s, %s) """
+            sql = """INSERT INTO users_subject (user_id, subject_id) VALUES (%s, %s) """
             values = (
                 session['user_id'],
-                request.args['movie_id']
+                request.args['subject_id']
             )
             cursor.execute(sql, values)
             connection.commit()
@@ -175,13 +176,13 @@ def delete_user():
     return redirect ('/')
 
 # TODO: Add a '/delete_user' route that uses DELETE
-@app.route('/deletemov')
-def delete_movie():
+@app.route('/deletesub')
+def delete_subject():
     with create_connection() as connection:
             with connection.cursor() as cursor:
-                cursor.execute("DELETE FROM users_movies WHERE movie_id=%s", request.args['movie_id'])
+                cursor.execute("DELETE FROM users_subject WHERE subject_id=%s", request.args['subject_id'])
                 connection.commit()
-    return redirect ('/watched?user_id=' + str(session['user_id']))
+    return redirect ('/choosen?user_id=' + str(session['user_id']))
 
 @app.route('/edit', methods=['GET', 'POST'])
 def edit_user():
